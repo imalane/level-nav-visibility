@@ -1,0 +1,23 @@
+.level-nav-visibility-hidden {
+  opacity: 0.55;
+}
+
+.level-nav-visibility-toggle {
+  flex: 0 0 1.75rem;
+  width: 1.75rem;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  margin-inline-start: 0.25rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.level-nav-visibility-toggle:hover,
+.level-nav-visibility-toggle:focus-visible {
+  color: var(--color-warm-1, #fda948);
+  box-shadow: none;
+  outline: 1px solid currentcolor;
+}
