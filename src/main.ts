@@ -6,13 +6,16 @@ function isHidden(level: LevelDocument): boolean {
 }
 
 function findLevel(element: Element): LevelDocument | null {
-  const row = element.closest<HTMLElement>(
+  const row = element.closest(
     "[data-level-nav-level-id], [data-level-id], [data-level]"
   );
-  const levelId = row?.dataset.levelNavLevelId ?? row?.dataset.levelId ?? row?.dataset.level;
+  if (!(row instanceof HTMLElement)) return null;
+
+  const levelId = row.dataset.levelNavLevelId ?? row.dataset.levelId ?? row.dataset.level;
   if (!levelId) return null;
 
-  const sceneId = row.closest<HTMLElement>("[data-scene-id]")?.dataset.sceneId;
+  const sceneRow = row.closest("[data-scene-id]");
+  const sceneId = sceneRow instanceof HTMLElement ? sceneRow.dataset.sceneId : undefined;
   if (sceneId) return game.scenes.get(sceneId)?.levels?.get(levelId) ?? null;
 
   for (const scene of game.scenes) {
@@ -24,14 +27,16 @@ function findLevel(element: Element): LevelDocument | null {
 
 function getLevelRows(root: HTMLElement): Set<HTMLElement> {
   const rows = new Set<HTMLElement>();
-  for (const action of root.querySelectorAll<HTMLElement>('[data-action="viewLevel"]')) {
-    const dataElement = action.closest<HTMLElement>("[data-level-id], [data-level]");
-    if (!dataElement) continue;
+  for (const action of root.querySelectorAll('[data-action="viewLevel"]')) {
+    if (!(action instanceof HTMLElement)) continue;
+    const dataElement = action.closest("[data-level-id], [data-level]");
+    if (!(dataElement instanceof HTMLElement)) continue;
 
-    const row =
-      action.closest<HTMLElement>("li") ??
+    const candidate =
+      action.closest("li") ??
       (dataElement === action ? action.parentElement : dataElement);
-    if (!row) continue;
+    if (!(candidate instanceof HTMLElement)) continue;
+    const row = candidate;
 
     const levelId = dataElement.dataset.levelId ?? dataElement.dataset.level;
     if (!levelId) continue;
@@ -57,9 +62,8 @@ function decorateNavigation(root: unknown): void {
     }
 
     row.hidden = false;
-    let button = row.querySelector<HTMLButtonElement>(
-      ":scope > .level-nav-visibility-toggle"
-    );
+    const existingButton = row.querySelector(":scope > .level-nav-visibility-toggle");
+    let button = existingButton instanceof HTMLButtonElement ? existingButton : null;
     if (!button) {
       button = document.createElement("button");
       button.type = "button";
@@ -83,8 +87,9 @@ function decorateNavigation(root: unknown): void {
 
 async function onToggleVisibility(event: MouseEvent): Promise<void> {
   if (!(event.target instanceof Element)) return;
-  const button = event.target.closest<HTMLButtonElement>("[data-level-visibility-toggle]");
-  if (!button || !game.user.isGM) return;
+  const candidate = event.target.closest("[data-level-visibility-toggle]");
+  if (!(candidate instanceof HTMLButtonElement) || !game.user.isGM) return;
+  const button = candidate;
 
   event.preventDefault();
   event.stopPropagation();

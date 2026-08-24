@@ -2,7 +2,7 @@
   "id": "level-nav-visibility",
   "title": "Level Navigation Visibility",
   "description": "Lets GMs show or hide individual Scene Levels in the top scene navigation menu.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "authors": [
     {
       "name": "imalane"
